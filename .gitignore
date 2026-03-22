@@ -1,0 +1,32 @@
+# python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# virtualenv
+venv/
+env/
+.venv/
+
+# env files
+.env
+
+# test artifacts
+.pytest_cache/
+test.db
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# docker
+*.log
