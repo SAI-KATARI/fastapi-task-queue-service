@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: taskuser
+      POSTGRES_PASSWORD: taskpass
+      POSTGRES_DB: taskdb
+    ports:
+      - "5432:5432"
+    volumes:
+      # mounting a named volume so data survives container restarts
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://taskuser:taskpass@postgres:5432/taskdb
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    # reload on code changes during local dev
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+
+  worker:
+    build: .
+    command: celery -A app.celery_app worker --loglevel=info --concurrency=4
+    environment:
+      DATABASE_URL: postgresql://taskuser:taskpass@postgres:5432/taskdb
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app
+
+volumes:
+  pgdata:

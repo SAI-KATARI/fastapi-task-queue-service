@@ -1,0 +1,29 @@
+version: "3.9"
+
+# production stack — uses the image built and pushed by GitHub Actions
+# no build step here, EC2 just pulls the latest image from Docker Hub
+# run with: docker-compose -f docker-compose.prod.yml up -d
+
+services:
+  redis:
+    image: redis:7
+    restart: always
+
+  api:
+    image: ${DOCKER_USERNAME}/task-queue-service:latest
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      - redis
+    restart: always
+
+  worker:
+    image: ${DOCKER_USERNAME}/task-queue-service:latest
+    command: celery -A app.celery_app worker --loglevel=info --concurrency=2
+    env_file: .env
+    depends_on:
+      - redis
+    restart: always
+
+# postgres is NOT here — prod uses RDS, so no local postgres container needed
