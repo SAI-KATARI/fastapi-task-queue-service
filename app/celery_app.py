@@ -28,4 +28,5 @@ celery.conf.update(
     # prefetch=1 means each worker only grabs one task at a time
     # without this, a worker can hoard tasks and slow things down
     worker_prefetch_multiplier=1,
+    broker_connection_retry_on_startup=True,
 )
