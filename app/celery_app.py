@@ -30,3 +30,4 @@ celery.conf.update(
     worker_prefetch_multiplier=1,
     broker_connection_retry_on_startup=True,
 )
+ 
