@@ -45,5 +45,18 @@ services:
     volumes:
       - .:/app
 
+
+  flower:
+    build: .
+    command: celery -A app.celery_app flower --port=5555
+    ports:
+      - "5555:5555"
+    environment:
+      DATABASE_URL: postgresql://taskuser:taskpass@postgres:5432/taskdb
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - redis
+      - worker
+
 volumes:
   pgdata:
